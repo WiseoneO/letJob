@@ -5,15 +5,18 @@ const config = require('../config/default');
 const sendToken = (user, statusCode, res)=>{
     // create jwt token
     const token =  user.getJwtToken();
+    console.log(token)
+
+    
 
     // options for cookie
-    const Options = {
-        expires : new Date(Date.now() + config.cookie_expires_time *24*60*60*1000),
+    const options = {
+        expires : new Date(Date.now() + 5* 24*60*60*1000),
         httpOnly: true
-    }
+    };
 
     res.status(statusCode)
-        .cookie('token', token, Options)
+        .cookie('token', token, options)
         .json({
             success: true,
             token

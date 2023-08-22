@@ -22,7 +22,7 @@ connectDatabase();
 app.use(express.json());
 
 // Setup cookie parser
-app.use(cookieParser);
+// app.use(cookieParser);
 
 // firing the routes
 app.use('/api/v1/job', jobRoute);

@@ -44,7 +44,7 @@ userSchema.pre('save', async function(next){
 });
 
 // Return json web token
-userSchema.methods.getJwtToken = async function(){
+userSchema.methods.getJwtToken =  function(){
 
     return jwt.sign({id: this._id}, config.jwt_secret,{
         expiresIn: config.jwt_expires_in,

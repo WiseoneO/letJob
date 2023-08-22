@@ -21,7 +21,7 @@ exports.registerUser = catchAsyncErrors(async(req, res, next)=>{
 exports.loginUser = catchAsyncErrors(async(req, res, next)=>{
     const {email, password} = req.body;
 
-    // check if email orpassword is entered by users
+    // check if email or password is entered by users
     if(!email || !password){
         return next(new ErrorHandler('Please enter email & password', 400));
     }
@@ -30,7 +30,7 @@ exports.loginUser = catchAsyncErrors(async(req, res, next)=>{
     const user = await userModel.findOne({email: email}).select('+password');
 
     if(!user){
-        return next(new ErrorHandler('Invalid email or password', 401))
+        return next(new ErrorHandler(`No user with ${email} found.`, 401))
     }
 
     // check if password is correct
@@ -40,5 +40,6 @@ exports.loginUser = catchAsyncErrors(async(req, res, next)=>{
         return next(new ErrorHandler('Invalid email or password', 401))
     }
 
-    await sendToken(user, 200, res);
+    sendToken(user, 200, res);
+
 })
