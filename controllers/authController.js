@@ -1,8 +1,10 @@
 const userModel = require('../models/users');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const ErrorHandler = require('../utils/errorHandler');
-const jwt = require('jsonwebtoken');
 const sendToken = require('../utils/jwtToken');
+const sendEmail = require('../utils/sendEmail');
+const crypto = require('crypto');
+
 // Register a new user =>/api/v1/user/register
 exports.registerUser = catchAsyncErrors(async(req, res, next)=>{
     const {name,email,password,role} = req.body;
@@ -41,5 +43,88 @@ exports.loginUser = catchAsyncErrors(async(req, res, next)=>{
     }
 
     sendToken(user, 200, res);
+
+});
+
+// forgot password =>/api/v1/auth/password/forgot
+exports.forgotPassword = catchAsyncErrors(async(req, res, next)=>{
+    const user = await userModel.findOne({email: req.body.email});
+
+    // Check if email exist
+    if(!user){
+        return next(new ErrorHandler('No user found with this email', 404));
+    }
+
+    // Get reset token
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({validateBeforeSave: false});
+
+    // create reset password url
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/password/reset/${resetToken}`;
+    const message = `Your password reset link is as follows:\n${resetUrl}
+    \n\n If you have not requested this please ignore this.`;
+
+    try{
+        await sendEmail({
+            email: user.email,
+            subject: 'LetJob-API password Recovery',
+            message
+    
+        });
+    
+        res.status(200).json({
+            success: true,
+            message: `Email sent successfull to: ${user.email}`
+        });
+    }catch(error){
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        await user.save({validateBeforeSave: false});
+        return next(new ErrorHandler('Email not sent', 500))
+    }
+
+
+    
+});
+
+// Reset password =>/api/v1/auth/password/reset/:token
+exports.resetPassword = catchAsyncErrors(async(req, res, next)=>{
+    // Hash url token 
+    const resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(req.params.token)
+        .digest('hex');
+
+    const user = await userModel.findOne({
+        resetPasswordToken, 
+        resetPasswordExpire: {$gt: Date.now()}
+    });
+
+    if(!user){
+        return next(new ErrorHandler('Password reset token is invalid or has expired', 400));
+    }
+
+    // Setup new password
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    sendToken(user, 200, res);
+});
+
+// Logout user =>/api/v1/auth/logout
+exports.logout = catchAsyncErrors(async(req, res, next)=>{
+    res.cookie('token', 'none',{
+        expires: new Date(Date.now()),
+        httpOnly: true
+    });
+
+    res.status(200).json({
+        success: true,
+        message: 'Logged out successfully.'
+    })
 
 })

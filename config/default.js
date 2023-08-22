@@ -8,7 +8,17 @@ const config = {
     cookie_expires_time: process.env.COOKIE_EXPIRES_TIME,
     jwt_expires_in : process.env.JWT_EXPIRES_IN,
     geocoder_provider: process.env.GEOCODER_PROVIDER,
-    mapquest_consumer_key: process.env.MAPQUEST_CONSUMER_KEY
+    mapquest_consumer_key: process.env.MAPQUEST_CONSUMER_KEY,
+    userSecret : process.env.USER_JWT_SECRET_KEY,
+    userEmailSecret : process.env.USER_EMAIL_VERIFICATION_SECRET,
+
+     // email
+     emailHost : process.env.MAIL_TRAP_HOST,
+     emailPort : process.env.MAIL_TRAP_PORT,
+     mailuserid : process.env.MAIL_TRAP_USER,
+     mailPassword : process.env.MAIL_TRAP_PASSWORD,
+     mailFrom: process.env.SMTP_FROM_EMAIL,
+     mailName: process.env.SMTP_FROM_NAME,
 }
 
 module.exports = config;

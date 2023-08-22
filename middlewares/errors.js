@@ -39,6 +39,17 @@ module.exports = (err, req, res, next)=>{
         }
 
 
+        // Handlig wrong jwt token erroe
+        if(err.name === 'JsonWebTokenError'){
+            message = 'JSON Web token is invalid. Try again';
+            error = new ErrorHandler(message, 500)
+        };
+
+        // Handling Expired JWT token error
+        if(err.name === 'TokenExpiredError'){
+            message = 'JSON Web token is expired. Try Again!';
+            error = new ErrorHandler(message, 500)
+        }
         res.status(error.statusCode).json({
             success: false,
             message: error.message || 'Internal Serval Error'

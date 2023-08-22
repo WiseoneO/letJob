@@ -5,9 +5,7 @@ const config = require('../config/default');
 const sendToken = (user, statusCode, res)=>{
     // create jwt token
     const token =  user.getJwtToken();
-    console.log(token)
 
-    
 
     // options for cookie
     const options = {
@@ -15,6 +13,10 @@ const sendToken = (user, statusCode, res)=>{
         httpOnly: true
     };
 
+    // Setting the secure cookie to true in production environment
+    if(config.node_env === 'production'){
+        options.secure = true;
+    }
     res.status(statusCode)
         .cookie('token', token, options)
         .json({

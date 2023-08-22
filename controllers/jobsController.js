@@ -6,6 +6,8 @@ const APIFILTERS = require('../utils/apiFilters');
 
 // Create a new Job => /api/v1/job/new
 exports.newJob = catchAsyncErrors(async (req, res, next)=>{
+    // Adding user to body
+    req.body.user = req.user.id;
     const job = await jobModel.create(req.body);
 
     res.status(201).json({
