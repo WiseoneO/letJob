@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const config = {
-    port: process.env.PORT || 6000,
+    port: process.env.PORT || 8000,
     node_env: process.env.NODE_ENV,
     db_local_uri: process.env.DB_LOCAL_URI,
     jwt_secret : process.env.JWT_SECRET,
