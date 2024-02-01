@@ -27,7 +27,9 @@ app.use(express.json());
 // firing the routes
 app.use('/api/v1/job', jobRoute);
 app.use('/api/v1/auth', userRoute);
-
+app.use("/", (req, res) => {
+    res.send("Welcome to Job Search API")
+})
 // Handled unhandled routes
 app.all('*', (req, res, next)=>{
     next(new ErrorHandler(`${req.originalUrl} route not found`, 404));
