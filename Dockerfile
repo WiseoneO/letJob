@@ -4,12 +4,10 @@
 
 FROM node:18
 
-WORKDIR /home/node/app
-COPY package*.json ./
-USER node
-RUN npm install
+WORKDIR /usr/app
+COPY --chown=node:node package*.json ./
+RUN npm ci
 COPY --chown=node:node . .
-
+USER node
 EXPOSE 8000
-# Start the server using the production build
 CMD [ "node", "app.js" ]
