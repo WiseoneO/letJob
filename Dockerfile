@@ -2,7 +2,7 @@
 # PRODUCTION BUILD
 ###################
 
-FROM node:18
+FROM node:18-alpine
 
 WORKDIR /usr/app
 COPY --chown=node:node package*.json ./
